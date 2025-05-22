@@ -166,7 +166,7 @@ class FelixSkills:
 ```
 ████████████████████████████████████████████████████████ 100%
 ```
-*"Been hating my life since 2020"*
+*"Been hating my life since 2020 and since this is a new github, my goal is to get that grade to B before 2026"*
 
 </div>
 
