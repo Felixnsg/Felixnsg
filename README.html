@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Felix's Terminal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0c0c0c;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            line-height: 1.4;
+            overflow-x: auto;
+        }
+
+        .terminal {
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(45deg, #0c0c0c 0%, #1a1a1a 100%);
+        }
+
+        .terminal-header {
+            background: #2d2d2d;
+            padding: 10px 15px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0;
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot.red { background: #ff5f56; }
+        .dot.yellow { background: #ffbd2e; }
+        .dot.green { background: #27ca3f; }
+
+        .terminal-title {
+            color: #ffffff;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        .terminal-body {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+            min-height: 500px;
+            border: 1px solid #333;
+        }
+
+        .output {
+            margin-bottom: 10px;
+            white-space: pre-wrap;
+        }
+
+        .prompt {
+            color: #00ff00;
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .prompt-text {
+            margin-right: 10px;
+        }
+
+        .input-line {
+            background: transparent;
+            border: none;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            outline: none;
+            flex: 1;
+        }
+
+        .cursor {
+            animation: blink 1s infinite;
+            color: #00ff00;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .command {
+            color: #87ceeb;
+        }
+
+        .directory {
+            color: #ffd700;
+        }
+
+        .file {
+            color: #ffffff;
+        }
+
+        .error {
+            color: #ff6b6b;
+        }
+
+        .success {
+            color: #51cf66;
+        }
+
+        .highlight {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .ascii-art {
+            color: #00ffff;
+            font-size: 12px;
+            line-height: 1.2;
+        }
+
+        .typing {
+            overflow: hidden;
+            border-right: 2px solid #00ff00;
+            animation: typing 2s steps(40) 1s forwards, blink-cursor 0.75s step-end 3s infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink-cursor {
+            from, to { border-color: transparent; }
+            50% { border-color: #00ff00; }
+        }
+
+        .help-commands {
+            color: #87ceeb;
+            margin: 10px 0;
+        }
+
+        .help-commands .cmd {
+            color: #ffd700;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div class="terminal-header">
+            <div class="terminal-dots">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+            </div>
+            <div class="terminal-title">felix@github: ~/profile</div>
+        </div>
+        
+        <div class="terminal-body">
+            <div id="output">
+                <div class="ascii-art">
+  ███████╗███████╗██╗     ██╗██╗  ██╗
+  ██╔════╝██╔════╝██║     ██║╚██╗██╔╝
+  █████╗  █████╗  ██║     ██║ ╚███╔╝ 
+  ██╔══╝  ██╔══╝  ██║     ██║ ██╔██╗ 
+  ██║     ███████╗███████╗██║██╔╝ ██╗
+  ╚═╝     ╚══════╝╚══════╝╚═╝╚═╝  ╚═╝
+                </div>
+                <div class="output">Welcome to Felix's interactive terminal!</div>
+                <div class="output">Computer Engineering Student | AI Enthusiast | Embedded Systems Developer</div>
+                <div class="output">Type <span class="highlight">help</span> to see available commands.</div>
+            </div>
+            
+            <div class="prompt">
+                <span class="prompt-text">felix@github:~$</span>
+                <input type="text" class="input-line" id="commandInput" autofocus>
+                <span class="cursor">█</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const commands = {
+            help: {
+                description: "Show available commands",
+                execute: () => {
+                    return `<div class="help-commands">Available commands:
+<span class="cmd">whoami</span>        - Display user information
+<span class="cmd">ls</span>           - List files and directories  
+<span class="cmd">cat about.txt</span> - Show detailed about information
+<span class="cmd">cat skills.txt</span> - Display technical skills
+<span class="cmd">cat projects.txt</span> - Show recent projects
+<span class="cmd">cat contact.txt</span> - Display contact information
+<span class="cmd">pwd</span>          - Show current directory
+<span class="cmd">date</span>         - Show current date
+<span class="cmd">clear</span>        - Clear terminal
+<span class="cmd">matrix</span>       - Run matrix animation 😉
+<span class="cmd">coffee</span>       - Essential developer fuel ☕</div>`;
+                }
+            },
+            
+            whoami: {
+                description: "Display user information",
+                execute: () => {
+                    return `<div class="success">👨💻 Felix - Computer Engineering Student</div>
+<div class="output">Passionate about building intelligent systems that bridge software and hardware.
+Focus areas: Machine Learning | Computer Vision | Embedded Systems</div>`;
+                }
+            },
+
+            ls: {
+                description: "List files and directories",
+                execute: () => {
+                    return `<div class="directory">📁 projects/</div>
+<div class="directory">📁 skills/</div>
+<div class="file">📄 about.txt</div>
+<div class="file">📄 skills.txt</div>
+<div class="file">📄 projects.txt</div>
+<div class="file">📄 contact.txt</div>
+<div class="file">📄 resume.pdf</div>`;
+                }
+            },
+
+            pwd: {
+                description: "Show current directory",
+                execute: () => "/home/felix/github-profile"
+            },
+
+            date: {
+                description: "Show current date",
+                execute: () => new Date().toString()
+            },
+
+            "cat about.txt": {
+                description: "Show detailed about information",
+                execute: () => {
+                    return `<div class="highlight">🧠 About Felix</div>
+<div class="output">I'm a Computer Engineering student passionate about building intelligent systems 
+that bridge software and hardware. My work focuses on machine learning, computer 
+vision, and embedded systems — especially where they intersect to create practical, 
+real-world applications.
+
+What drives me is solving everyday problems with systems that see, understand, 
+and respond. I believe the future lies in seamless human-machine interaction.</div>`;
+                }
+            },
+
+            "cat skills.txt": {
+                description: "Display technical skills",
+                execute: () => {
+                    return `<div class="highlight">🛠️ Technical Skills</div>
+<div class="success">Languages:</div>
+<div class="output">  • Python (PyTorch, OpenCV, TensorFlow)
+  • C/C++ (Embedded Systems)
+  • JavaScript/HTML/CSS
+  • Assembly (ARM, x86)</div>
+
+<div class="success">Hardware:</div>
+<div class="output">  • Raspberry Pi & STM32 Development
+  • Circuit Design & PCB Layout
+  • Sensors & Actuators Integration
+  • Real-time Systems</div>
+
+<div class="success">AI/ML:</div>
+<div class="output">  • Computer Vision & Image Processing
+  • Natural Language Processing
+  • Deep Learning & Neural Networks
+  • Voice Recognition (Whisper)</div>`;
+                }
+            },
+
+            "cat projects.txt": {
+                description: "Show recent projects",
+                execute: () => {
+                    return `<div class="highlight">🚀 Recent Projects</div>
+<div class="success">🧠 AI-Powered Personal Assistant</div>
+<div class="output">   Combines vision, voice, and memory using PyTorch, OpenCV, and Whisper
+   Features real-time face detection and natural voice interaction</div>
+
+<div class="success">🤖 Smart Security System</div>
+<div class="output">   Raspberry Pi & STM32-based system with real-time face detection
+   Automated task execution and smart home integration</div>
+
+<div class="success">📊 Custom Deep Learning Models</div>
+<div class="output">   Experimenting with classification, recognition, and natural interaction
+   Focus on lightweight models for embedded deployment</div>
+
+<div class="success">🌐 API-Based Tools</div>
+<div class="output">   Multi-language TTS systems, chatbots, and control panels
+   RESTful APIs for cross-platform integration</div>`;
+                }
+            },
+
+            "cat contact.txt": {
+                description: "Display contact information",
+                execute: () => {
+                    return `<div class="highlight">📫 Let's Connect!</div>
+<div class="output">I'm always looking to collaborate on innovative projects involving:
+  • Applied Machine Learning
+  • Embedded AI Systems  
+  • Voice Interaction
+  • Robotics & Smart Automation
+
+If you're working on something cool — or just want to nerd out about 
+neural nets and microcontrollers — feel free to reach out!</div>
+
+<div class="success">Find me on GitHub for more projects and code samples! 🚀</div>`;
+                }
+            },
+
+            clear: {
+                description: "Clear terminal",
+                execute: () => {
+                    document.getElementById('output').innerHTML = `
+                        <div class="ascii-art">
+  ███████╗███████╗██╗     ██╗██╗  ██╗
+  ██╔════╝██╔════╝██║     ██║╚██╗██╔╝
+  █████╗  █████╗  ██║     ██║ ╚███╔╝ 
+  ██╔══╝  ██╔══╝  ██║     ██║ ██╔██╗ 
+  ██║     ███████╗███████╗██║██╔╝ ██╗
+  ╚═╝     ╚══════╝╚══════╝╚═╝╚═╝  ╚═╝
+                        </div>
+                        <div class="output">Terminal cleared. Type <span class="highlight">help</span> to see available commands.</div>
+                    `;
+                    return "";
+                }
+            },
+
+            matrix: {
+                description: "Run matrix animation",
+                execute: () => {
+                    return `<div class="success">Loading Matrix...</div>
+<div class="ascii-art">
+01001000 01100101 01101100 01101100 01101111
+01010111 01101111 01110010 01101100 01100100
+11000001 10110101 11001100 10011101 11100011
+</div>
+<div class="output">Just kidding! But wouldn't that be cool? 😄</div>`;
+                }
+            },
+
+            coffee: {
+                description: "Essential developer fuel",
+                execute: () => {
+                    return `<div class="ascii-art">
+    ( (
+     ) )
+  ........
+  |      |]
+  \\      /
+   '----'
+</div>
+<div class="success">☕ Here's your coffee! Fuel for more coding sessions.</div>
+<div class="output">Warning: May cause increased productivity and late-night debugging sessions.</div>`;
+                }
+            }
+        };
+
+        const input = document.getElementById('commandInput');
+        const output = document.getElementById('output');
+
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const command = input.value.trim();
+                executeCommand(command);
+                input.value = '';
+            }
+        });
+
+        function executeCommand(command) {
+            // Add command to output
+            const commandDiv = document.createElement('div');
+            commandDiv.innerHTML = `<span class="prompt-text">felix@github:~$</span> <span class="command">${command}</span>`;
+            output.appendChild(commandDiv);
+
+            // Execute command
+            if (commands[command]) {
+                const result = commands[command].execute();
+                if (result) {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.innerHTML = result;
+                    output.appendChild(resultDiv);
+                }
+            } else if (command === '') {
+                // Do nothing for empty command
+            } else {
+                const errorDiv = document.createElement('div');
+                errorDiv.innerHTML = `<span class="error">Command not found: ${command}</span>
+<div class="output">Type <span class="highlight">help</span> to see available commands.</div>`;
+                output.appendChild(errorDiv);
+            }
+
+            // Scroll to bottom
+            output.scrollTop = output.scrollHeight;
+        }
+
+        // Focus input when clicking anywhere in terminal
+        document.querySelector('.terminal-body').addEventListener('click', () => {
+            input.focus();
+        });
+    </script>
+</body>
+</html>
