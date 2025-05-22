@@ -166,7 +166,7 @@ class FelixSkills:
 ```
 ████████████████████████████████████████████████████████ 100%
 ```
-*"Turning coffee into intelligent systems since 20XX"*
+*"Been hating my life since 2020"*
 
 </div>
 
